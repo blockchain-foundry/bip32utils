@@ -136,7 +136,7 @@ class BIP32Key(object):
         Calculate the HMAC-SHA512 of input data using the chain code as key.
 
         Returns a tuple of the left and right halves of the HMAC
-        """
+        """         
         I = hmac.new(self.C, data, hashlib.sha512).digest()
         return (I[:32], I[32:])
 
@@ -159,7 +159,6 @@ class BIP32Key(object):
             data = b'\0' + self.k.to_string() + i_str
         else:
             data = self.PublicKey() + i_str
-
         # Get HMAC of data
         (Il, Ir) = self.hmac(data)
 
@@ -171,8 +170,8 @@ class BIP32Key(object):
         k_int = (Il_int + pvt_int) % CURVE_ORDER
         if (k_int == 0):
             return None
-        secret = int_to_string(k_int)
-
+        secret = (b'\0'*32 + int_to_string(k_int))[-32:]
+        
         # Construct and return a new BIP32Key
         return BIP32Key(secret=secret, chain=Ir, depth=self.depth+1, index=i, fpr=self.Fingerprint(), public=False)
 
